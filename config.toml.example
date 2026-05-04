@@ -1,0 +1,33 @@
+# yt-playlist-dl — Configuration (TOML 1.0)
+# Copier ce fichier vers ~/.config/yt_playlist_dl/config.toml et adapter.
+
+log_level = "INFO"   # DEBUG | INFO | WARNING | ERROR
+
+# ── Coffre Obsidian ──────────────────────────────────────────────────────
+[obsidian]
+vault_path        = "~/Documents/Obsidian/MyVault"
+notes_subfolder   = "Resources/YouTube"
+overwrite_notes   = false
+
+# Tags ajoutés à chaque note (en plus des tags extraits de YouTube)
+default_tags = [
+    "literature-note",
+    "ressources-note",
+    "resource",
+    "resource-note",
+]
+
+# Liens Obsidian internes — utiliser la syntaxe [[wikilink]]
+default_project = "[[202409201035 - ~~ Thèse ~~]]"
+default_task    = "[[202409201035d - Utilisation d'un LLM et d'un RAG pour l'analyse du code source de V8]]"
+
+# ── Téléchargement ───────────────────────────────────────────────────────
+[download]
+output_dir         = "~/Downloads/YouTube"
+article_output_dir = "~/Downloads/Articles"
+browser         = ""          # firefox | chrome | chromium | brave | edge
+max_filesize    = ""          # ex: "500m" ou "2g" (vide = illimité)
+max_duration    = 0           # secondes (0 = illimité)
+embed_metadata  = true
+write_subtitles = false
+video_format    = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"

@@ -1,0 +1,30 @@
+# yt-playlist-dl — Dépendances Python
+# pip install -r requirements.txt --break-system-packages
+# Ou : python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+
+# ── Backend de téléchargement ──────────────────────────────────────────────
+yt-dlp>=2024.1.0
+
+# ── API YouTube ───────────────────────────────────────────────────────────
+google-api-python-client>=2.100.0
+google-auth-oauthlib>=1.2.0
+google-auth-httplib2>=0.2.0
+google-auth>=2.23.0
+
+# ── CLI & TUI ─────────────────────────────────────────────────────────────
+typer[all]>=0.12.0       # Parsing d'arguments typés (inclut rich + shellingham)
+questionary>=2.0.0       # Menus interactifs (select, checkbox, text)
+rich>=13.7.0             # Mise en forme console, barres de progression
+
+# ── Obsidian / YAML ───────────────────────────────────────────────────────
+PyYAML>=6.0              # Génération du frontmatter YAML des notes Obsidian
+
+# ── TOML (Python < 3.11 uniquement) ──────────────────────────────────────
+# tomllib est inclus dans la stdlib Python 3.11+.
+# Pour Python 3.9 / 3.10, décommenter la ligne suivante :
+# tomli>=2.0.0
+
+# ── Post-processing vidéo (système) ──────────────────────────────────────
+# ffmpeg doit être installé sur le système :
+#   Ubuntu/Debian/Kali : sudo apt install ffmpeg
+#   Arch Linux         : sudo pacman -S ffmpeg
