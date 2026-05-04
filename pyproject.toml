@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yt-playlist-dl"
+version = "0.1.0"
+description = "YouTube playlist downloader with Obsidian integration"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+
+dependencies = [
+    "yt-dlp>=2024.1.0",
+    "google-api-python-client>=2.100.0",
+    "google-auth-oauthlib>=1.2.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth>=2.23.0",
+    "typer[all]>=0.12.0",
+    "questionary>=2.0.0",
+    "rich>=13.7.0",
+    "PyYAML>=6.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0",
+    "lxml-html-clean>=0.1.0",
+    "newspaper4k>=0.9.0",
+    "keyring>=24.0.0",
+]
+
+[project.scripts]
+ObsidianVideoNoteManager = "yt_playlist_dl.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["yt_playlist_dl*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4.0",
+    "mypy>=1.0",
+]

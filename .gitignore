@@ -1,0 +1,10 @@
+venv/
+client_secret*
+config.toml
+state.db
+sys
+yt_playlist_dl/__pycache__/
+token.json
+*.pyc
+logs/
+*.egg-info
