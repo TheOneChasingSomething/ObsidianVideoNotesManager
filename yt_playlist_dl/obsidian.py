@@ -218,7 +218,7 @@ class ObsidianNoteWriter:
         if meta.playlist_name:
             base = base / _sanitize_filename(meta.playlist_name)
 
-        filename = _sanitize_filename(meta.title) + ".md"
+        filename = _sanitize_filename(f"Youtube - {meta.title}") + ".md"
         return base / filename
 
 
