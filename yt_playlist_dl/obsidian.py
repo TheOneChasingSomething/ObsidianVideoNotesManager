@@ -53,7 +53,7 @@ class VideoMeta:
     __slots__ = (
         "video_id", "title", "author", "url",
         "description", "published_date", "tags", "playlist_name",
-        "download_path", "knowledge_index",
+        "download_path", "knowledge_index", "project",
     )
 
     def __init__(
@@ -68,6 +68,7 @@ class VideoMeta:
         playlist_name: Optional[str] = None,
         download_path: Optional[str] = None,
         knowledge_index: Optional[str] = None,
+        project: Optional[str] = None,
     ) -> None:
         self.video_id = video_id
         self.title = title
@@ -77,8 +78,9 @@ class VideoMeta:
         self.published_date = published_date or date.today().isoformat()
         self.tags = tags or []
         self.playlist_name = playlist_name
-        self.download_path = download_path  # chemin fichier vidéo ou "KO"
-        self.knowledge_index = knowledge_index  # ex: "202409201035"
+        self.download_path = download_path
+        self.knowledge_index = knowledge_index
+        self.project = project  # override du default_project config
 
 
 # ── Générateur de notes ───────────────────────────────────────────────────
@@ -169,9 +171,14 @@ class ObsidianNoteWriter:
         elif self.config.default_knowledge_index:
             data["Knowledge-index"] = self.config.default_knowledge_index
 
-        # Project et Task : n'inclure que si définis
-        if self.config.default_project:
-            data["Project"] = self.config.default_project
+        # Project : meta.project > config.default_project
+        project_raw = meta.project if meta.project else self.config.default_project
+        if project_raw:
+            # Ajouter [[...]] si absent
+            p = project_raw.strip()
+            if not p.startswith("[["):
+                p = f"[[{p}]]"
+            data["Project"] = p
         if self.config.default_task:
             data["Task"] = self.config.default_task
 

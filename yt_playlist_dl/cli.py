@@ -521,6 +521,14 @@ def _interactive_mode(cfg: AppConfig, secrets_path: Optional[Path] = None) -> No
             default=str(cfg.download.article_output_dir),
         ).ask()
         output_dir = Path(output_str).expanduser()
+        if not cfg.obsidian.default_project:
+            project_input = questionary.text(
+                "Obsidian project (without [[]], leave empty to skip):",
+                default="",
+            ).ask()
+            if project_input and project_input.strip():
+                cfg.obsidian.default_project = project_input.strip()
+
         from .article import ArticleExtractor, ArticleNoteWriter, ArticleDownloader
         with console.status("[cyan]Extracting metadata…"):
             meta = ArticleExtractor().extract(url_article)
@@ -674,6 +682,15 @@ def _interactive_mode(cfg: AppConfig, secrets_path: Optional[Path] = None) -> No
         return
 
     # ── Common options (playlist / video / list) ───────────────────────────
+    # Ask for project if not set in config
+    if not cfg.obsidian.default_project:
+        project_input = questionary.text(
+            "Obsidian project (without [[]], leave empty to skip):",
+            default="",
+        ).ask()
+        if project_input and project_input.strip():
+            cfg.obsidian.default_project = project_input.strip()
+
     creds = _auth(secrets_path)
     yt = YouTubeClient(creds)
 
