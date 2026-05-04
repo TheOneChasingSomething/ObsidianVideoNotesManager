@@ -165,22 +165,24 @@ class ObsidianNoteWriter:
             "download": meta.download_path or "KO",
         }
 
-        # Knowledge-index
-        if meta.knowledge_index:
-            data["Knowledge-index"] = meta.knowledge_index
-        elif self.config.default_knowledge_index:
-            data["Knowledge-index"] = self.config.default_knowledge_index
+        # Knowledge-index (always included, [[...]] added if absent)
+        ki = meta.knowledge_index or self.config.default_knowledge_index or ""
+        if ki:
+            ki = ki.strip()
+            if not ki.startswith("[["):
+                ki = f"[[{ki}]]"
+        data["Knowledge-index"] = ki
 
-        # Project : meta.project > config.default_project
+        # Project : meta.project > config.default_project (always included)
         project_raw = meta.project if meta.project else self.config.default_project
         if project_raw:
-            # Ajouter [[...]] si absent
             p = project_raw.strip()
             if not p.startswith("[["):
                 p = f"[[{p}]]"
             data["Project"] = p
-        if self.config.default_task:
-            data["Task"] = self.config.default_task
+        else:
+            data["Project"] = ""  # empty field for manual editing
+        data["Task"] = self.config.default_task or ""  # empty field for manual editing
 
         return yaml.dump(
             data,

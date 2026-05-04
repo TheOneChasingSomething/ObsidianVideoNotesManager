@@ -529,6 +529,14 @@ def _interactive_mode(cfg: AppConfig, secrets_path: Optional[Path] = None) -> No
             if project_input and project_input.strip():
                 cfg.obsidian.default_project = project_input.strip()
 
+        if not cfg.obsidian.default_knowledge_index:
+            ki_input = questionary.text(
+                "Knowledge index (e.g. 202409201035, leave empty to skip):",
+                default="",
+            ).ask()
+            if ki_input and ki_input.strip():
+                cfg.obsidian.default_knowledge_index = ki_input.strip()
+
         from .article import ArticleExtractor, ArticleNoteWriter, ArticleDownloader
         with console.status("[cyan]Extracting metadata…"):
             meta = ArticleExtractor().extract(url_article)
@@ -690,6 +698,15 @@ def _interactive_mode(cfg: AppConfig, secrets_path: Optional[Path] = None) -> No
         ).ask()
         if project_input and project_input.strip():
             cfg.obsidian.default_project = project_input.strip()
+
+    # Ask for knowledge index if not set in config
+    if not cfg.obsidian.default_knowledge_index:
+        ki_input = questionary.text(
+            "Knowledge index (e.g. 202409201035, leave empty to skip):",
+            default="",
+        ).ask()
+        if ki_input and ki_input.strip():
+            cfg.obsidian.default_knowledge_index = ki_input.strip()
 
     creds = _auth(secrets_path)
     yt = YouTubeClient(creds)
