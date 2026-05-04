@@ -1,6 +1,6 @@
 # yt-playlist-dl — Dépendances Python
-# pip install -r requirements.txt --break-system-packages
-# Ou : python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+# Installer : pip install -r requirements.txt --break-system-packages
+# Ou dans un venv : python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 
 # ── Backend de téléchargement ──────────────────────────────────────────────
 yt-dlp>=2024.1.0
@@ -18,6 +18,16 @@ rich>=13.7.0             # Mise en forme console, barres de progression
 
 # ── Obsidian / YAML ───────────────────────────────────────────────────────
 PyYAML>=6.0              # Génération du frontmatter YAML des notes Obsidian
+
+# ── Téléchargement d'articles web ─────────────────────────────────────────
+requests>=2.31.0         # Requêtes HTTP
+beautifulsoup4>=4.12.0   # Parsing HTML
+lxml>=4.9.0              # Parser HTML rapide (backend BeautifulSoup)
+lxml-html-clean>=0.1.0   # Nettoyage HTML (requis par newspaper4k)
+newspaper4k>=0.9.0       # Extraction d'articles (auteur, date, texte, tags)
+
+# ── Secret management ────────────────────────────────────────────────────
+keyring>=24.0.0          # Store client secrets in system keyring (GNOME/KDE/macOS)
 
 # ── TOML (Python < 3.11 uniquement) ──────────────────────────────────────
 # tomllib est inclus dans la stdlib Python 3.11+.
