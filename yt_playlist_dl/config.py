@@ -47,6 +47,8 @@ class DownloadConfig:
     embed_metadata: bool = True
     write_subtitles: bool = False
     video_format: str = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"
+    download_transcript: bool = True
+    transcript_langs: list[str] = field(default_factory=lambda: ["fr", "en"])
 
 
 @dataclass
@@ -104,6 +106,8 @@ def _parse_config(raw: dict) -> AppConfig:
         embed_metadata=dl_raw.get("embed_metadata", True),
         write_subtitles=dl_raw.get("write_subtitles", False),
         video_format=dl_raw.get("video_format", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"),
+        download_transcript=dl_raw.get("download_transcript", True),
+        transcript_langs=dl_raw.get("transcript_langs", ["fr", "en"]),
     )
 
     return AppConfig(
@@ -140,6 +144,10 @@ max_duration       = 0
 embed_metadata     = true
 write_subtitles    = false
 video_format       = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"
+
+# Transcript Markdown (.md) généré depuis les sous-titres (via yt-dlp, sans re-télécharger la vidéo)
+download_transcript = true
+transcript_langs    = ["fr", "en"]
 """
     if not path.exists():
         path.write_text(example, encoding="utf-8")

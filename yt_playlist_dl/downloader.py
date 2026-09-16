@@ -81,6 +81,28 @@ def _short_name(title: str, maxlen: int = 40) -> str:
     return title[:maxlen] + "…" if len(title) > maxlen else title
 
 
+# ── Transcript ────────────────────────────────────────────────────────────
+
+def _vtt_to_text(vtt_content: str) -> str:
+    """Convertit un fichier VTT en texte brut (dédupe les lignes de sous-titres défilants)."""
+    lines: list[str] = []
+    seen: set[str] = set()
+    for line in vtt_content.splitlines():
+        line = line.strip()
+        if (
+            not line
+            or "-->" in line
+            or line.startswith(("WEBVTT", "Kind:", "Language:", "NOTE"))
+            or line.isdigit()
+        ):
+            continue
+        line = re.sub(r"<[^>]+>", "", line)  # tags <00:00:01.000> des sous-titres auto
+        if line and line not in seen:
+            seen.add(line)
+            lines.append(line)
+    return "\n".join(lines)
+
+
 # ── Résolution du fichier téléchargé ─────────────────────────────────────
 
 def _find_downloaded_file(output_dir: Path, video_id: str) -> Optional[str]:
@@ -122,6 +144,8 @@ class Downloader:
         self.video_format = dl.video_format
         self.embed_metadata = dl.embed_metadata
         self.write_subtitles = dl.write_subtitles
+        self.download_transcript = dl.download_transcript
+        self.transcript_langs = dl.transcript_langs
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -279,9 +303,9 @@ class Downloader:
 
     def _download_single(
         self, video: VideoEntry, subfolder: Optional[str]
-    ) -> tuple[bool, Optional[str]]:
+    ) -> tuple[bool, Optional[str], Optional[Path]]:
         """
-        Lance yt-dlp pour une vidéo et retourne (succès, chemin_fichier).
+        Lance yt-dlp pour une vidéo et retourne (succès, chemin_fichier, chemin_transcript).
         """
         dest_dir = self.output_dir / (subfolder or "")
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -315,6 +339,50 @@ class Downloader:
                 )
                 logger.error(f"✗ DownloadError : {video.title} — {e}")
                 return False, None
+
+    # ── Récupération du transcript ────────────────────────────────────────
+
+    def _fetch_transcript(self, video: VideoEntry, dest_dir: Path) -> Optional[Path]:
+        """
+        Télécharge les sous-titres (manuels ou auto-générés) via yt-dlp,
+        les convertit en Markdown et supprime le .vtt intermédiaire.
+        """
+        opts: dict = {
+            "skip_download": True,
+            "writesubtitles": True,
+            "writeautomaticsub": True,
+            "subtitleslangs": self.transcript_langs,
+            "subtitlesformat": "vtt",
+            "outtmpl": str(dest_dir / "%(id)s.%(ext)s"),
+            "quiet": True,
+            "no_warnings": True,
+            "ignoreerrors": True,
+        }
+        if self.browser:
+            opts["cookiesfrombrowser"] = (self.browser,)
+
+        try:
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                ydl.download([video.url])
+        except Exception as e:
+            logger.warning(f"Transcript indisponible : {video.title} — {e}")
+            return None
+
+        vtt_files = sorted(dest_dir.glob(f"{video.video_id}.*.vtt"))
+        if not vtt_files:
+            logger.info(f"Aucun sous-titre trouvé pour : {video.title}")
+            return None
+
+        vtt_path = vtt_files[0]
+        md_path = vtt_path.with_suffix(".md")
+        text = _vtt_to_text(vtt_path.read_text(encoding="utf-8"))
+        md_path.write_text(
+            f"# Transcript — {video.title}\n\n{video.url}\n\n{text}\n",
+            encoding="utf-8",
+        )
+        vtt_path.unlink()
+        logger.info(f"Transcript écrit : {md_path.name}")
+        return md_path
 
     # ── Génération de note Obsidian ───────────────────────────────────────
 

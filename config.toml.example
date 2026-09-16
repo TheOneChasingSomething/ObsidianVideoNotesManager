@@ -31,3 +31,7 @@ max_duration    = 0           # secondes (0 = illimité)
 embed_metadata  = true
 write_subtitles = false
 video_format    = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"
+
+# Transcript Markdown (.md) généré depuis les sous-titres (via yt-dlp, sans re-télécharger la vidéo)
+download_transcript = true
+transcript_langs    = ["fr", "en"]
